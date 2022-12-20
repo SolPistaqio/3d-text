@@ -104,12 +104,36 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 // scene.add(cube);
-const donutGeometry = new THREE.TorusGeometry(0.15, 0.1, 20, 45);
+// const donutGeometry = new THREE.TorusGeometry(0.15, 0.1, 20, 45);
+const donutGeometry = new THREE.IcosahedronGeometry(0.15, 1);
+const diamondGeometry = new THREE.OctahedronGeometry(0.2, 0);
+const tetrahedronGeometry = new THREE.TetrahedronGeometry(0.15, 0);
 const donutMaterial = new THREE.MeshMatcapMaterial({
   matcap: matcap2ndTexture,
 });
 
 const objects = new THREE.Group();
+
+const addToGroup = (geometry, material, number) => {
+  for (let index = 0; index < number; index++) {
+    const donut = new THREE.Mesh(geometry, material);
+    donut.position.x = (Math.random() - 0.5) * 30;
+    donut.position.y = (Math.random() - 0.5) * 30;
+    donut.position.z = (Math.random() - 0.5) * 30;
+    donut.rotation.x = Math.PI * Math.random();
+    donut.rotation.y = Math.PI * Math.random();
+    const randomScale = Math.random();
+
+    donut.scale.set(randomScale, randomScale, randomScale);
+    donut.castShadow = true;
+    objects.add(donut);
+  }
+  scene.add(objects);
+};
+
+addToGroup(diamondGeometry, donutMaterial, 200);
+addToGroup(donutGeometry, donutMaterial, 200);
+addToGroup(tetrahedronGeometry, donutMaterial, 200);
 
 for (let index = 0; index < 400; index++) {
   const donut = new THREE.Mesh(donutGeometry, donutMaterial);
@@ -126,6 +150,15 @@ for (let index = 0; index < 400; index++) {
   donut.castShadow = true;
 }
 scene.add(objects);
+
+// trees
+const geometry = new THREE.ConeGeometry(1, 3);
+const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+const cone = new THREE.Mesh(geometry, material);
+cone.position.x = -2;
+cone.position.z = -1;
+cone.castShadow = true;
+scene.add(cone);
 
 /**
  * Sizes
@@ -191,7 +224,8 @@ const tick = () => {
 
   //animate objects
 
-  objects.rotation.x = (elapsedTime / 30) * Math.PI * 2;
+  objects.rotation.x = (elapsedTime / 60) * Math.PI * 2;
+  objects.rotation.y = (elapsedTime / 90) * Math.PI * 2;
   // Update controls
   controls.update();
 
