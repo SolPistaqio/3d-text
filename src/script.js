@@ -22,8 +22,10 @@ const scene = new THREE.Scene();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const matcapTexture = textureLoader.load("/textures/matcaps/9.png");
-const matcap2ndTexture = textureLoader.load("/textures/matcaps/2.png");
+const matcapTexture = textureLoader.load("/textures/matcaps/4.png");
+const matcap2ndTexture = textureLoader.load("/textures/matcaps/5.png");
+const matcap3rdTexture = textureLoader.load("/textures/matcaps/7.png");
+const matcap4thTexture = textureLoader.load("/textures/matcaps/8.png");
 
 // Fonts
 
@@ -31,16 +33,16 @@ const fontLoader = new FontLoader();
 
 fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
   console.log("font loaded");
-  const textGeometry = new TextGeometry("Hello World!", {
+  const textGeometry = new TextGeometry("Happy Holidays!", {
     font: font,
     size: 0.5,
     height: 0.2,
-    curveSegments: 4, //lower for performance
+    curveSegments: 8, //lower for performance
     bevelEnabled: true,
     bevelThickness: 0.03,
     bevelSize: 0.02,
     bevelOffset: 0,
-    bevelSegments: 4, //lower for performance //
+    bevelSegments: 8, //lower for performance //
   });
 
   //centering text HARD WAY
@@ -56,6 +58,7 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 
   const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
   const text = new THREE.Mesh(textGeometry, textMaterial);
+  text.position.y = 3;
   text.castShadow = true;
 
   // gui.add(text, "size").min(0).max(1).step(0.0001);
@@ -111,6 +114,12 @@ const tetrahedronGeometry = new THREE.TetrahedronGeometry(0.15, 0);
 const donutMaterial = new THREE.MeshMatcapMaterial({
   matcap: matcap2ndTexture,
 });
+const secondMaterial = new THREE.MeshMatcapMaterial({
+  matcap: matcap3rdTexture,
+});
+const thirdMaterial = new THREE.MeshMatcapMaterial({
+  matcap: matcap4thTexture,
+});
 
 const objects = new THREE.Group();
 
@@ -132,8 +141,8 @@ const addToGroup = (geometry, material, number) => {
 };
 
 addToGroup(diamondGeometry, donutMaterial, 200);
-addToGroup(donutGeometry, donutMaterial, 200);
-addToGroup(tetrahedronGeometry, donutMaterial, 200);
+addToGroup(donutGeometry, secondMaterial, 200);
+addToGroup(tetrahedronGeometry, thirdMaterial, 200);
 
 for (let index = 0; index < 400; index++) {
   const donut = new THREE.Mesh(donutGeometry, donutMaterial);
@@ -151,15 +160,30 @@ for (let index = 0; index < 400; index++) {
 }
 scene.add(objects);
 
-// trees
-const geometry = new THREE.ConeGeometry(1, 3);
-const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-const cone = new THREE.Mesh(geometry, material);
-cone.position.x = -2;
-cone.position.z = -1;
-cone.castShadow = true;
-scene.add(cone);
+const parameters = {
+  treeColor: 0x17b045,
+};
 
+// trees
+const treeGeometry = new THREE.ConeGeometry(1, 3);
+const treeMaterial = new THREE.MeshBasicMaterial({
+  color: parameters.treeColor,
+});
+gui.addColor(parameters, "treeColor").onChange(() => {
+  treeMaterial.color.set(parameters.treeColor);
+});
+
+for (let index = 0; index < 100; index++) {
+  const cone = new THREE.Mesh(treeGeometry, treeMaterial);
+  const randomScale = Math.random();
+
+  cone.scale.set(randomScale, randomScale, randomScale);
+  cone.position.x = (Math.random() - 0.5) * 30;
+  cone.position.z = (Math.random() - 0.5) * 30;
+
+  cone.castShadow = true;
+  scene.add(cone);
+}
 /**
  * Sizes
  */
@@ -192,9 +216,13 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.x = 5;
-camera.position.y = 1;
-camera.position.z = 5;
+camera.position.x = 0;
+camera.position.y = 2.4;
+camera.position.z = 6.5;
+
+gui.add(camera.position, "x").min(-10).max(10).step(0.01);
+gui.add(camera.position, "y").min(-10).max(10).step(0.01);
+gui.add(camera.position, "z").min(-10).max(10).step(0.01);
 
 scene.add(camera);
 
