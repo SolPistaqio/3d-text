@@ -23,7 +23,7 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 const matcapTexture = textureLoader.load("/textures/matcaps/9.png");
-const matcap2ndTexture = textureLoader.load("/textures/matcaps/8.png");
+const matcap2ndTexture = textureLoader.load("/textures/matcaps/2.png");
 
 // Fonts
 
@@ -56,6 +56,7 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 
   const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
   const text = new THREE.Mesh(textGeometry, textMaterial);
+  text.castShadow = true;
 
   // gui.add(text, "size").min(0).max(1).step(0.0001);
   scene.add(text);
@@ -75,6 +76,7 @@ scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 hemiLight.position.set(0, 20, 0);
+hemiLight.castShadow = true;
 scene.add(hemiLight);
 
 const dirLight = new THREE.DirectionalLight(0xffffff);
@@ -102,24 +104,26 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 // scene.add(cube);
-const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+const donutGeometry = new THREE.TorusGeometry(0.15, 0.1, 20, 45);
 const donutMaterial = new THREE.MeshMatcapMaterial({
   matcap: matcap2ndTexture,
 });
 
 const objects = new THREE.Group();
 
-for (let index = 0; index < 200; index++) {
+for (let index = 0; index < 400; index++) {
   const donut = new THREE.Mesh(donutGeometry, donutMaterial);
   objects.add(donut);
-  donut.position.x = (Math.random() - 0.5) * 15;
+  donut.position.x = (Math.random() - 0.5) * 30;
 
-  donut.position.y = (Math.random() - 0.5) * 15;
-  donut.position.z = (Math.random() - 0.5) * 15;
+  donut.position.y = (Math.random() - 0.5) * 30;
+  donut.position.z = (Math.random() - 0.5) * 30;
   donut.rotation.x = Math.PI * Math.random();
   donut.rotation.y = Math.PI * Math.random();
   const randomScale = Math.random();
+
   donut.scale.set(randomScale, randomScale, randomScale);
+  donut.castShadow = true;
 }
 scene.add(objects);
 
@@ -187,7 +191,7 @@ const tick = () => {
 
   //animate objects
 
-  objects.rotation.x = (elapsedTime / 15) * Math.PI * 2;
+  objects.rotation.x = (elapsedTime / 30) * Math.PI * 2;
   // Update controls
   controls.update();
 
