@@ -66,13 +66,40 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 // const axisHelper = new THREE.AxesHelper();
 // scene.add(axisHelper);
 
+// sky
+
+scene.background = new THREE.Color(0xa0a0a0);
+scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
+
+// light
+
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+hemiLight.position.set(0, 20, 0);
+scene.add(hemiLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff);
+dirLight.position.set(3, 10, 10);
+dirLight.castShadow = true;
+dirLight.shadow.camera.top = 2;
+dirLight.shadow.camera.bottom = -2;
+dirLight.shadow.camera.left = -2;
+dirLight.shadow.camera.right = 2;
+dirLight.shadow.camera.near = 0.1;
+dirLight.shadow.camera.far = 40;
+scene.add(dirLight);
+
 /**
- * Object
+ * Ground
  */
-// const cube = new THREE.Mesh(
-//   new THREE.BoxGeometry(1, 1, 1),
-//   new THREE.MeshBasicMaterial()
-// );
+
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(100, 100),
+  new THREE.MeshStandardMaterial({ color: 0xa0a0a0, roughness: 0.7 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.5;
+ground.receiveShadow = true;
+scene.add(ground);
 
 // scene.add(cube);
 const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
@@ -80,9 +107,11 @@ const donutMaterial = new THREE.MeshMatcapMaterial({
   matcap: matcap2ndTexture,
 });
 
+const objects = new THREE.Group();
+
 for (let index = 0; index < 200; index++) {
   const donut = new THREE.Mesh(donutGeometry, donutMaterial);
-
+  objects.add(donut);
   donut.position.x = (Math.random() - 0.5) * 15;
 
   donut.position.y = (Math.random() - 0.5) * 15;
@@ -91,8 +120,8 @@ for (let index = 0; index < 200; index++) {
   donut.rotation.y = Math.PI * Math.random();
   const randomScale = Math.random();
   donut.scale.set(randomScale, randomScale, randomScale);
-  scene.add(donut);
 }
+scene.add(objects);
 
 /**
  * Sizes
@@ -129,11 +158,15 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.x = 5;
 camera.position.y = 1;
 camera.position.z = 5;
+
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.keyPanSpeed = 3;
+controls.maxPolarAngle = Math.PI * 0.5;
+controls.maxDistance = 15;
 
 /**
  * Renderer
@@ -152,6 +185,9 @@ const clock = new THREE.Clock();
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
+  //animate objects
+
+  objects.rotation.x = (elapsedTime / 15) * Math.PI * 2;
   // Update controls
   controls.update();
 
