@@ -6,6 +6,17 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { Group } from "three";
 
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+
+const environmentMapTexture = cubeTextureLoader.load([
+  "/textures/matcaps/env/px.png",
+  "/textures/matcaps/env/nx.png",
+  "/textures/matcaps/env/py.png",
+  "/textures/matcaps/env/ny.png",
+  "/textures/matcaps/env/pz.png",
+  "/textures/matcaps/env/nz.png",
+]);
+
 /**
  * Base
  */
@@ -69,7 +80,7 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 
 // sky
 
-scene.background = new THREE.Color(0xa0a0a0);
+scene.background = environmentMapTexture;
 scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
 scene.fog.receiveShadow = true;
 
@@ -111,19 +122,22 @@ const diamondGeometry = new THREE.OctahedronGeometry(0.2, 0);
 const tetrahedronGeometry = new THREE.TetrahedronGeometry(0.15, 0);
 
 const colors = {
-  one: 0xbb3e3e,
-  two: 0x3f7b9d,
+  one: 0xb8ccdb,
+  two: 0x7994a4,
   three: 0xe2d332,
 };
 
 const donutMaterial = new THREE.MeshPhongMaterial({
   color: colors.one,
+  wireframe: true,
 });
 const secondMaterial = new THREE.MeshPhongMaterial({
   color: colors.two,
+  wireframe: true,
 });
 const thirdMaterial = new THREE.MeshPhongMaterial({
   color: colors.three,
+  wireframe: true,
 });
 
 gui.addColor(colors, "one").onChange(() => {
@@ -178,7 +192,7 @@ for (let index = 0; index < 400; index++) {
 scene.add(objects);
 
 const parameters = {
-  treeColor: 0x17b045,
+  treeColor: 0x19943e,
 };
 
 // trees
