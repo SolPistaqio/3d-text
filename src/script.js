@@ -23,9 +23,6 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 const matcapTexture = textureLoader.load("/textures/matcaps/4.png");
-const matcap2ndTexture = textureLoader.load("/textures/matcaps/5.png");
-const matcap3rdTexture = textureLoader.load("/textures/matcaps/7.png");
-const matcap4thTexture = textureLoader.load("/textures/matcaps/8.png");
 
 // Fonts
 
@@ -74,12 +71,13 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 
 scene.background = new THREE.Color(0xa0a0a0);
 scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
+scene.fog.receiveShadow = true;
 
 // light
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 hemiLight.position.set(0, 20, 0);
-hemiLight.castShadow = true;
+
 scene.add(hemiLight);
 
 const dirLight = new THREE.DirectionalLight(0xffffff);
@@ -111,14 +109,33 @@ scene.add(ground);
 const donutGeometry = new THREE.IcosahedronGeometry(0.15, 1);
 const diamondGeometry = new THREE.OctahedronGeometry(0.2, 0);
 const tetrahedronGeometry = new THREE.TetrahedronGeometry(0.15, 0);
-const donutMaterial = new THREE.MeshMatcapMaterial({
-  matcap: matcap2ndTexture,
+
+const colors = {
+  one: 0xbb3e3e,
+  two: 0x3f7b9d,
+  three: 0xe2d332,
+};
+
+const donutMaterial = new THREE.MeshPhongMaterial({
+  color: colors.one,
 });
-const secondMaterial = new THREE.MeshMatcapMaterial({
-  matcap: matcap3rdTexture,
+const secondMaterial = new THREE.MeshPhongMaterial({
+  color: colors.two,
 });
-const thirdMaterial = new THREE.MeshMatcapMaterial({
-  matcap: matcap4thTexture,
+const thirdMaterial = new THREE.MeshPhongMaterial({
+  color: colors.three,
+});
+
+gui.addColor(colors, "one").onChange(() => {
+  donutMaterial.color.set(colors.one);
+});
+
+gui.addColor(colors, "two").onChange(() => {
+  secondMaterial.color.set(colors.two);
+});
+
+gui.addColor(colors, "three").onChange(() => {
+  thirdMaterial.color.set(colors.three);
 });
 
 const objects = new THREE.Group();
@@ -126,9 +143,9 @@ const objects = new THREE.Group();
 const addToGroup = (geometry, material, number) => {
   for (let index = 0; index < number; index++) {
     const donut = new THREE.Mesh(geometry, material);
-    donut.position.x = (Math.random() - 0.5) * 30;
-    donut.position.y = (Math.random() - 0.5) * 30;
-    donut.position.z = (Math.random() - 0.5) * 30;
+    donut.position.x = (Math.random() - 0.5) * 40;
+    donut.position.y = (Math.random() - 0.5) * 40;
+    donut.position.z = (Math.random() - 0.5) * 40;
     donut.rotation.x = Math.PI * Math.random();
     donut.rotation.y = Math.PI * Math.random();
     const randomScale = Math.random();
@@ -204,6 +221,7 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
 });
 
 /**
@@ -232,6 +250,8 @@ controls.enableDamping = true;
 controls.keyPanSpeed = 3;
 controls.maxPolarAngle = Math.PI * 0.5;
 controls.maxDistance = 15;
+// controls.movementSpeed = 150;
+// controls.lookSpeed = 0.1;
 
 /**
  * Renderer
