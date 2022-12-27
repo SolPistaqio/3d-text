@@ -21,7 +21,9 @@ const environmentMapTexture = cubeTextureLoader.load([
  * Base
  */
 // Debug
-const gui = new dat.GUI();
+const gui = new dat.GUI({ autoPlace: true });
+gui.controls;
+gui.close();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
