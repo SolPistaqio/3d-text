@@ -43,7 +43,7 @@ const fontLoader = new FontLoader();
 
 fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
   console.log("font loaded");
-  const textGeometry = new TextGeometry("Happy Holidays!", {
+  const textGeometry = new TextGeometry("Happy 2023!", {
     font: font,
     size: 0.5,
     height: 0.2,
